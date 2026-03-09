@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>القرآن الكريم</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --dark: #0d1117;
+  --dark2: #161b22;
+  --dark3: #1c2333;
+  --green: #1a6b3c;
+  --green-light: #2d9e5f;
+  --text: #e6edf3;
+  --text-dim: #8b949e;
+  --border: rgba(201,168,76,0.2);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: 'Cairo', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background pattern */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(201,168,76,0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(26,107,60,0.05) 0%, transparent 50%);
+  pointer-events:none; z-index:0;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #0d1117 0%, #1a2332 50%, #0d1117 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  position: sticky; top:0; z-index:100;
+}
+.header-inner {
+  max-width: 600px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.logo {
+  font-family: 'Amiri', serif;
+  font-size: 22px; color: var(--gold);
+  letter-spacing: 1px;
+}
+.header-btns { display:flex; gap:8px; }
+.icon-btn {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid var(--border);
+  color: var(--gold); border-radius: 10px;
+  width: 38px; height: 38px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:16px; transition: all 0.2s;
+}
+.icon-btn:hover { background: rgba(201,168,76,0.2); }
+
+/* Tabs */
+.tabs {
+  display:flex; background: var(--dark2);
+  border-bottom: 1px solid var(--border);
+  max-width:600px; margin:0 auto;
+}
+.tab {
+  flex:1; padding: 12px 8px; text-align:center;
+  font-size:14px; cursor:pointer; color:var(--text-dim);
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+  font-family:'Cairo',sans-serif;
+}
+.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+
+/* Search */
+.search-wrap {
+  max-width:600px; margin:0 auto;
+  padding:12px 16px;
+}
+.search-box {
+  display:flex; gap:8px; align-items:center;
+  background: var(--dark2);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 10px 16px;
+}
+.search-box input {
+  flex:1; background:none; border:none; outline:none;
+  color:var(--text); font-family:'Cairo',sans-serif; font-size:15px;
+  text-align:right;
+}
+.search-box input::placeholder { color:var(--text-dim); }
+.search-icon { color:var(--gold); font-size:18px; }
+
+/* Surah List */
+.list-wrap { max-width:600px; margin:0 auto; padding:0 16px 80px; }
+.surah-card {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px; margin-bottom:8px;
+  background: var(--dark2);
+  border: 1px solid var(--border);
+  border-radius: 16px; cursor:pointer;
+  transition: all 0.25s; position:relative; overflow:hidden;
+}
+.surah-card::before {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(90deg, rgba(201,168,76,0.05), transparent);
+  opacity:0; transition:opacity 0.25s;
+}
+.surah-card:hover::before { opacity:1; }
+.surah-card:hover { border-color:rgba(201,168,76,0.4); transform:translateX(-2px); }
+.surah-num {
+  width:42px; height:42px; min-width:42px;
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:white;
+}
+.surah-info { flex:1; }
+.surah-name { font-family:'Amiri',serif; font-size:20px; color:var(--gold); }
+.surah-meta { font-size:12px; color:var(--text-dim); margin-top:2px; }
+.surah-arabic { font-family:'Amiri Quran',serif; font-size:18px; color:var(--text-dim); }
+
+/* Quran Reader */
+.reader-wrap { max-width:600px; margin:0 auto; display:none; }
+.reader-header {
+  padding:16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+}
+.back-btn {
+  background: rgba(201,168,76,0.1);
+  border:1px solid var(--border); color:var(--gold);
+  border-radius:10px; padding:8px 14px; cursor:pointer;
+  font-family:'Cairo',sans-serif; font-size:14px;
+  display:flex; align-items:center; gap:6px;
+}
+.reader-title { font-family:'Amiri',serif; font-size:22px; color:var(--gold); flex:1; text-align:center; }
+
+/* Bismillah */
+.bismillah {
+  text-align:center; padding:24px 16px;
+  font-family:'Amiri Quran',serif; font-size:28px;
+  color:var(--gold); line-height:2;
+  border-bottom:1px solid var(--border);
+}
+
+/* Ayah */
+.ayahs-wrap { padding:16px; }
+.ayah-block {
+  margin-bottom:16px;
+  background: var(--dark2);
+  border:1px solid var(--border);
+  border-radius:16px; overflow:hidden;
+  transition: all 0.2s;
+}
+.ayah-block:hover { border-color:rgba(201,168,76,0.4); }
+.ayah-text {
+  font-family:'Amiri Quran',serif;
+  font-size:24px; line-height:2.2;
+  color:var(--text); padding:20px 20px 12px;
+  text-align:right; direction:rtl;
+}
+.ayah-num-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius:50%; font-size:11px; color:#000; font-weight:700;
+  margin-right:8px; font-family:'Cairo',sans-serif; vertical-align:middle;
+}
+.ayah-actions {
+  display:flex; gap:8px; padding:10px 16px 14px;
+  border-top:1px solid rgba(201,168,76,0.1);
+}
+.ayah-btn {
+  flex:1; padding:8px; border-radius:10px; cursor:pointer;
+  font-family:'Cairo',sans-serif; font-size:13px;
+  border:1px solid var(--border); transition:all 0.2s;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+}
+.tafsir-btn { background:rgba(26,107,60,0.2); color:#5cb85c; }
+.tafsir-btn:hover { background:rgba(26,107,60,0.4); }
+.share-btn { background:rgba(201,168,76,0.1); color:var(--gold); }
+.share-btn:hover { background:rgba(201,168,76,0.2); }
+
+/* Tafsir Panel */
+.tafsir-panel {
+  display:none; padding:16px;
+  background: linear-gradient(135deg, rgba(26,107,60,0.1), rgba(26,107,60,0.05));
+  border-top:1px solid rgba(26,107,60,0.2);
+  font-size:15px; line-height:2; color:var(--text);
+  direction:rtl; text-align:right;
+}
+.tafsir-panel.open { display:block; }
+.tafsir-title {
+  font-family:'Amiri',serif; font-size:17px;
+  color:var(--green-light); margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+
+/* Translation panel */
+.trans-panel {
+  display:none; padding:14px 16px;
+  background: rgba(201,168,76,0.05);
+  border-top:1px solid var(--border);
+  font-size:14px; line-height:1.8; color:var(--text-dim);
+  direction:ltr; text-align:left;
+}
+.trans-panel.open { display:block; }
+
+/* Toast */
+.toast {
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%);
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  color:white; padding:12px 24px; border-radius:50px;
+  font-size:14px; font-family:'Cairo',sans-serif;
+  opacity:0; transition:opacity 0.3s; z-index:200; pointer-events:none;
+  white-space:nowrap;
+}
+.toast.show { opacity:1; }
+
+/* Bottom nav */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  background: var(--dark2); border-top:1px solid var(--border);
+  display:flex; z-index:100;
+}
+.nav-item {
+  flex:1; padding:10px 8px;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  cursor:pointer; color:var(--text-dim); transition:all 0.2s; font-size:11px;
+  font-family:'Cairo',sans-serif;
+}
+.nav-item.active { color:var(--gold); }
+.nav-icon { font-size:20px; }
+
+/* Page sections */
+.page { display:none; }
+.page.active { display:block; }
+
+/* Surah header decoration */
+.surah-header-deco {
+  text-align:center; padding:20px 16px 0;
+}
+.surah-header-deco .deco-line {
+  height:1px; background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin:12px 0;
+}
+.surah-type-badge {
+  display:inline-block; padding:4px 14px;
+  background:rgba(201,168,76,0.1); border:1px solid var(--border);
+  border-radius:50px; font-size:12px; color:var(--gold);
+}
+
+/* Font size control */
+.font-controls {
+  display:flex; gap:8px; align-items:center;
+  padding:8px 16px; border-bottom:1px solid var(--border);
+  justify-content:flex-end;
+}
+.font-btn {
+  background:rgba(201,168,76,0.1); border:1px solid var(--border);
+  color:var(--gold); border-radius:8px; width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:16px;
+}
+.font-label { font-size:12px; color:var(--text-dim); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--dark); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.ayah-block { animation: fadeIn 0.3s ease both; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">☪ القرآن الكريم</div>
+    <div class="header-btns">
+      <div class="icon-btn" onclick="toggleFontSize()" title="حجم الخط">أ</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Page: Surah List -->
+<div class="page active" id="page-list">
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="ابحث عن سورة..." oninput="filterSurahs()">
+    </div>
+  </div>
+  <div class="list-wrap" id="surahList"></div>
+</div>
+
+<!-- Page: Reader -->
+<div class="page" id="page-reader">
+  <div class="reader-wrap" id="readerWrap">
+    <div class="reader-header">
+      <button class="back-btn" onclick="goBack()">→ رجوع</button>
+      <div class="reader-title" id="readerTitle"></div>
+    </div>
+    <div class="font-controls">
+      <span class="font-label">حجم الخط:</span>
+      <div class="font-btn" onclick="changeFontSize(-2)">−</div>
+      <div class="font-btn" onclick="changeFontSize(2)">+</div>
+    </div>
+    <div class="surah-header-deco">
+      <div class="deco-line"></div>
+      <span class="surah-type-badge" id="surahTypeBadge"></span>
+      <div class="deco-line"></div>
+    </div>
+    <div class="bismillah" id="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+    <div class="ayahs-wrap" id="ayahsWrap"></div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-list" onclick="showPage('list')">
+    <div class="nav-icon">📖</div>
+    <span>السور</span>
+  </div>
+  <div class="nav-item" id="nav-bookmarks" onclick="showBookmarks()">
+    <div class="nav-icon">🔖</div>
+    <span>المحفوظات</span>
+  </div>
+  <div class="nav-item" id="nav-search" onclick="focusSearch()">
+    <div class="nav-icon">🔍</div>
+    <span>بحث</span>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const SURAHS = [
+  {id:1,name:"الفاتحة",arabic:"الْفَاتِحَة",ayahs:7,type:"مكية",page:1},
+  {id:2,name:"البقرة",arabic:"الْبَقَرَة",ayahs:286,type:"مدنية",page:2},
+  {id:3,name:"آل عمران",arabic:"آلِ عِمْرَان",ayahs:200,type:"مدنية",page:50},
+  {id:4,name:"النساء",arabic:"النِّسَاء",ayahs:176,type:"مدنية",page:77},
+  {id:5,name:"المائدة",arabic:"الْمَائِدَة",ayahs:120,type:"مدنية",page:106},
+  {id:6,name:"الأنعام",arabic:"الْأَنْعَام",ayahs:165,type:"مكية",page:128},
+  {id:7,name:"الأعراف",arabic:"الْأَعْرَاف",ayahs:206,type:"مكية",page:151},
+  {id:8,name:"الأنفال",arabic:"الْأَنْفَال",ayahs:75,type:"مدنية",page:177},
+  {id:9,name:"التوبة",arabic:"التَّوْبَة",ayahs:129,type:"مدنية",page:187},
+  {id:10,name:"يونس",arabic:"يُونُس",ayahs:109,type:"مكية",page:208},
+  {id:11,name:"هود",arabic:"هُود",ayahs:123,type:"مكية",page:221},
+  {id:12,name:"يوسف",arabic:"يُوسُف",ayahs:111,type:"مكية",page:235},
+  {id:13,name:"الرعد",arabic:"الرَّعْد",ayahs:43,type:"مدنية",page:249},
+  {id:14,name:"إبراهيم",arabic:"إِبْرَاهِيم",ayahs:52,type:"مكية",page:255},
+  {id:15,name:"الحجر",arabic:"الْحِجْر",ayahs:99,type:"مكية",page:262},
+  {id:16,name:"النحل",arabic:"النَّحْل",ayahs:128,type:"مكية",page:267},
+  {id:17,name:"الإسراء",arabic:"الْإِسْرَاء",ayahs:111,type:"مكية",page:282},
+  {id:18,name:"الكهف",arabic:"الْكَهْف",ayahs:110,type:"مكية",page:293},
+  {id:19,name:"مريم",arabic:"مَرْيَم",ayahs:98,type:"مكية",page:305},
+  {id:20,name:"طه",arabic:"طه",ayahs:135,type:"مكية",page:312},
+  {id:21,name:"الأنبياء",arabic:"الْأَنبِيَاء",ayahs:112,type:"مكية",page:322},
+  {id:22,name:"الحج",arabic:"الْحَج",ayahs:78,type:"مدنية",page:332},
+  {id:23,name:"المؤمنون",arabic:"الْمُؤْمِنُون",ayahs:118,type:"مكية",page:342},
+  {id:24,name:"النور",arabic:"النُّور",ayahs:64,type:"مدنية",page:350},
+  {id:25,name:"الفرقان",arabic:"الْفُرْقَان",ayahs:77,type:"مكية",page:359},
+  {id:26,name:"الشعراء",arabic:"الشُّعَرَاء",ayahs:227,type:"مكية",page:367},
+  {id:27,name:"النمل",arabic:"النَّمْل",ayahs:93,type:"مكية",page:377},
+  {id:28,name:"القصص",arabic:"الْقَصَص",ayahs:88,type:"مكية",page:385},
+  {id:29,name:"العنكبوت",arabic:"الْعَنكَبُوت",ayahs:69,type:"مكية",page:396},
+  {id:30,name:"الروم",arabic:"الرُّوم",ayahs:60,type:"مكية",page:404},
+  {id:31,name:"لقمان",arabic:"لُقْمَان",ayahs:34,type:"مكية",page:411},
+  {id:32,name:"السجدة",arabic:"السَّجْدَة",ayahs:30,type:"مكية",page:415},
+  {id:33,name:"الأحزاب",arabic:"الْأَحْزَاب",ayahs:73,type:"مدنية",page:418},
+  {id:34,name:"سبأ",arabic:"سَبَأ",ayahs:54,type:"مكية",page:428},
+  {id:35,name:"فاطر",arabic:"فَاطِر",ayahs:45,type:"مكية",page:434},
+  {id:36,name:"يس",arabic:"يس",ayahs:83,type:"مكية",page:440},
+  {id:37,name:"الصافات",arabic:"الصَّافَّات",ayahs:182,type:"مكية",page:446},
+  {id:38,name:"ص",arabic:"ص",ayahs:88,type:"مكية",page:453},
+  {id:39,name:"الزمر",arabic:"الزُّمَر",ayahs:75,type:"مكية",page:458},
+  {id:40,name:"غافر",arabic:"غَافِر",ayahs:85,type:"مكية",page:467},
+  {id:41,name:"فصلت",arabic:"فُصِّلَت",ayahs:54,type:"مكية",page:477},
+  {id:42,name:"الشورى",arabic:"الشُّورَىٰ",ayahs:53,type:"مكية",page:483},
+  {id:43,name:"الزخرف",arabic:"الزُّخْرُف",ayahs:89,type:"مكية",page:489},
+  {id:44,name:"الدخان",arabic:"الدُّخَان",ayahs:59,type:"مكية",page:496},
+  {id:45,name:"الجاثية",arabic:"الْجَاثِيَة",ayahs:37,type:"مكية",page:499},
+  {id:46,name:"الأحقاف",arabic:"الْأَحْقَاف",ayahs:35,type:"مكية",page:502},
+  {id:47,name:"محمد",arabic:"مُحَمَّد",ayahs:38,type:"مدنية",page:507},
+  {id:48,name:"الفتح",arabic:"الْفَتْح",ayahs:29,type:"مدنية",page:511},
+  {id:49,name:"الحجرات",arabic:"الْحُجُرَات",ayahs:18,type:"مدنية",page:515},
+  {id:50,name:"ق",arabic:"ق",ayahs:45,type:"مكية",page:518},
+  {id:51,name:"الذاريات",arabic:"الذَّارِيَات",ayahs:60,type:"مكية",page:520},
+  {id:52,name:"الطور",arabic:"الطُّور",ayahs:49,type:"مكية",page:523},
+  {id:53,name:"النجم",arabic:"النَّجْم",ayahs:62,type:"مكية",page:526},
+  {id:54,name:"القمر",arabic:"الْقَمَر",ayahs:55,type:"مكية",page:528},
+  {id:55,name:"الرحمن",arabic:"الرَّحْمَٰن",ayahs:78,type:"مدنية",page:531},
+  {id:56,name:"الواقعة",arabic:"الْوَاقِعَة",ayahs:96,type:"مكية",page:534},
+  {id:57,name:"الحديد",arabic:"الْحَدِيد",ayahs:29,type:"مدنية",page:537},
+  {id:58,name:"المجادلة",arabic:"الْمُجَادِلَة",ayahs:22,type:"مدنية",page:542},
+  {id:59,name:"الحشر",arabic:"الْحَشْر",ayahs:24,type:"مدنية",page:545},
+  {id:60,name:"الممتحنة",arabic:"الْمُمْتَحِنَة",ayahs:13,type:"مدنية",page:549},
+  {id:61,name:"الصف",arabic:"الصَّف",ayahs:14,type:"مدنية",page:551},
+  {id:62,name:"الجمعة",arabic:"الْجُمُعَة",ayahs:11,type:"مدنية",page:553},
+  {id:63,name:"المنافقون",arabic:"الْمُنَافِقُون",ayahs:11,type:"مدنية",page:554},
+  {id:64,name:"التغابن",arabic:"التَّغَابُن",ayahs:18,type:"مدنية",page:556},
+  {id:65,name:"الطلاق",arabic:"الطَّلَاق",ayahs:12,type:"مدنية",page:558},
+  {id:66,name:"التحريم",arabic:"التَّحْرِيم",ayahs:12,type:"مدنية",page:560},
+  {id:67,name:"الملك",arabic:"الْمُلْك",ayahs:30,type:"مكية",page:562},
+  {id:68,name:"القلم",arabic:"الْقَلَم",ayahs:52,type:"مكية",page:564},
+  {id:69,name:"الحاقة",arabic:"الْحَاقَّة",ayahs:52,type:"مكية",page:566},
+  {id:70,name:"المعارج",arabic:"الْمَعَارِج",ayahs:44,type:"مكية",page:568},
+  {id:71,name:"نوح",arabic:"نُوح",ayahs:28,type:"مكية",page:570},
+  {id:72,name:"الجن",arabic:"الْجِن",ayahs:28,type:"مكية",page:572},
+  {id:73,name:"المزمل",arabic:"الْمُزَّمِّل",ayahs:20,type:"مكية",page:574},
+  {id:74,name:"المدثر",arabic:"الْمُدَّثِّر",ayahs:56,type:"مكية",page:575},
+  {id:75,name:"القيامة",arabic:"الْقِيَامَة",ayahs:40,type:"مكية",page:577},
+  {id:76,name:"الإنسان",arabic:"الْإِنسَان",ayahs:31,type:"مدنية",page:578},
+  {id:77,name:"المرسلات",arabic:"الْمُرْسَلَات",ayahs:50,type:"مكية",page:580},
+  {id:78,name:"النبأ",arabic:"النَّبَأ",ayahs:40,type:"مكية",page:582},
+  {id:79,name:"النازعات",arabic:"النَّازِعَات",ayahs:46,type:"مكية",page:583},
+  {id:80,name:"عبس",arabic:"عَبَسَ",ayahs:42,type:"مكية",page:585},
+  {id:81,name:"التكوير",arabic:"التَّكْوِير",ayahs:29,type:"مكية",page:586},
+  {id:82,name:"الانفطار",arabic:"الِانفِطَار",ayahs:19,type:"مكية",page:587},
+  {id:83,name:"المطففين",arabic:"الْمُطَفِّفِين",ayahs:36,type:"مكية",page:587},
+  {id:84,name:"الانشقاق",arabic:"الِانشِقَاق",ayahs:25,type:"مكية",page:589},
+  {id:85,name:"البروج",arabic:"الْبُرُوج",ayahs:22,type:"مكية",page:590},
+  {id:86,name:"الطارق",arabic:"الطَّارِق",ayahs:17,type:"مكية",page:591},
+  {id:87,name:"الأعلى",arabic:"الْأَعْلَىٰ",ayahs:19,type:"مكية",page:591},
+  {id:88,name:"الغاشية",arabic:"الْغَاشِيَة",ayahs:26,type:"مكية",page:592},
+  {id:89,name:"الفجر",arabic:"الْفَجْر",ayahs:30,type:"مكية",page:593},
+  {id:90,name:"البلد",arabic:"الْبَلَد",ayahs:20,type:"مكية",page:594},
+  {id:91,name:"الشمس",arabic:"الشَّمْس",ayahs:15,type:"مكية",page:595},
+  {id:92,name:"الليل",arabic:"الَّيْل",ayahs:21,type:"مكية",page:595},
+  {id:93,name:"الضحى",arabic:"الضُّحَىٰ",ayahs:11,type:"مكية",page:596},
+  {id:94,name:"الشرح",arabic:"الشَّرْح",ayahs:8,type:"مكية",page:596},
+  {id:95,name:"التين",arabic:"التِّين",ayahs:8,type:"مكية",page:597},
+  {id:96,name:"العلق",arabic:"الْعَلَق",ayahs:19,type:"مكية",page:597},
+  {id:97,name:"القدر",arabic:"الْقَدْر",ayahs:5,type:"مكية",page:598},
+  {id:98,name:"البينة",arabic:"الْبَيِّنَة",ayahs:8,type:"مدنية",page:598},
+  {id:99,name:"الزلزلة",arabic:"الزَّلْزَلَة",ayahs:8,type:"مدنية",page:599},
+  {id:100,name:"العاديات",arabic:"الْعَادِيَات",ayahs:11,type:"مكية",page:599},
+  {id:101,name:"القارعة",arabic:"الْقَارِعَة",ayahs:11,type:"مكية",page:600},
+  {id:102,name:"التكاثر",arabic:"التَّكَاثُر",ayahs:8,type:"مكية",page:600},
+  {id:103,name:"العصر",arabic:"الْعَصْر",ayahs:3,type:"مكية",page:601},
+  {id:104,name:"الهمزة",arabic:"الْهُمَزَة",ayahs:9,type:"مكية",page:601},
+  {id:105,name:"الفيل",arabic:"الْفِيل",ayahs:5,type:"مكية",page:601},
+  {id:106,name:"قريش",arabic:"قُرَيْش",ayahs:4,type:"مكية",page:602},
+  {id:107,name:"الماعون",arabic:"الْمَاعُون",ayahs:7,type:"مكية",page:602},
+  {id:108,name:"الكوثر",arabic:"الْكَوْثَر",ayahs:3,type:"مكية",page:602},
+  {id:109,name:"الكافرون",arabic:"الْكَافِرُون",ayahs:6,type:"مكية",page:603},
+  {id:110,name:"النصر",arabic:"النَّصْر",ayahs:3,type:"مدنية",page:603},
+  {id:111,name:"المسد",arabic:"الْمَسَد",ayahs:5,type:"مكية",page:603},
+  {id:112,name:"الإخلاص",arabic:"الْإِخْلَاص",ayahs:4,type:"مكية",page:604},
+  {id:113,name:"الفلق",arabic:"الْفَلَق",ayahs:5,type:"مكية",page:604},
+  {id:114,name:"الناس",arabic:"النَّاس",ayahs:6,type:"مكية",page:604},
+];
+
+// Sample Ayahs for key surahs
+const AYAHS_DATA = {
+  1: [
+    {ar:"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", en:"In the name of Allah, the Entirely Merciful, the Especially Merciful.", tafsir:"هذه الآية الكريمة تُسمى البسملة، وهي مفتاح كل خير. الرحمن: ذو الرحمة الواسعة التي تشمل جميع الخلق في الدنيا. الرحيم: ذو الرحمة الخاصة بالمؤمنين في الآخرة."},
+    {ar:"الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", en:"All praise is due to Allah, Lord of the worlds -", tafsir:"الحمد: الثناء بالجميل اختياراً، ويشمل الشكر والمدح. رب العالمين: المالك والمربي لجميع الخلق، من الإنس والجن والملائكة وسائر المخلوقات."},
+    {ar:"الرَّحْمَٰنِ الرَّحِيمِ", en:"The Entirely Merciful, the Especially Merciful,", tafsir:"تكرار هاتين الصفتين للتأكيد على سعة رحمة الله تعالى وعمومها، وأنها ترجى في كل حال."},
+    {ar:"مَالِكِ يَوْمِ الدِّينِ", en:"Sovereign of the Day of Recompense.", tafsir:"يوم الدين: يوم القيامة والحساب والجزاء. الله وحده هو المالك المتصرف في ذلك اليوم العظيم، لا يملك فيه أحد شيئاً إلا بإذنه."},
+    {ar:"إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", en:"It is You we worship and You we ask for help.", tafsir:"هذه الآية هي محور العلاقة بين العبد وربه. تقديم المفعول (إياك) يفيد الحصر والاختصاص، أي: نخصك وحدك بالعبادة والاستعانة، ولا نشرك بك أحداً."},
+    {ar:"اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", en:"Guide us to the straight path -", tafsir:"الصراط المستقيم: هو الإسلام، دين الحق الذي أنزله الله وارتضاه لعباده. والهداية نوعان: هداية الدلالة والإرشاد، وهداية التوفيق والإلهام."},
+    {ar:"صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ", en:"The path of those upon whom You have bestowed favor, not of those who have evoked Your anger or of those who are astray.", tafsir:"الذين أنعم الله عليهم: الأنبياء والصديقون والشهداء والصالحون. المغضوب عليهم: الذين عرفوا الحق وتركوه كاليهود. الضالون: الذين ضلوا بغير علم كالنصارى."},
+  ],
+  112: [
+    {ar:"قُلْ هُوَ اللَّهُ أَحَدٌ", en:"Say, He is Allah, [who is] One,", tafsir:"هذه السورة تعدل ثلث القرآن لما تضمنته من توحيد الله. أحد: الواحد الفرد الذي لا شريك له ولا نظير ولا مثيل في ذاته وصفاته وأفعاله."},
+    {ar:"اللَّهُ الصَّمَدُ", en:"Allah, the Eternal Refuge.", tafsir:"الصمد: السيد الكامل الذي يُقصده الخلق في حوائجهم ومسائلهم، لعلمه وقدرته وكماله. وهو المستغني عن كل شيء والكل محتاج إليه."},
+    {ar:"لَمْ يَلِدْ وَلَمْ يُولَدْ", en:"He neither begets nor is born,", tafsir:"تنزيه الله عن النقائص البشرية. فهو لم يلد لأنه لا يحتاج إلى وارث، ولم يولد لأنه الأول الذي لا شيء قبله، فكيف يكون له والد؟"},
+    {ar:"وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ", en:"Nor is there to Him any equivalent.", tafsir:"لا يشابهه أحد ولا يماثله شيء من خلقه، لا في ذاته ولا في صفاته ولا في أفعاله. وهذا هو الختم المحكم لسورة التوحيد الخالص."},
+  ],
+  113: [
+    {ar:"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", en:"Say, I seek refuge in the Lord of daybreak", tafsir:"الفلق: الصبح حين ينفلق الظلام عن النور. والاستعاذة برب الفلق فيها إشارة إلى قدرة الله على إخراج النور من الظلام، فهو قادر على دفع كل شر."},
+    {ar:"مِن شَرِّ مَا خَلَقَ", en:"From the evil of that which He created", tafsir:"شر ما خلق: يشمل جميع المخلوقات ذات الشر كالسباع والحشرات والأمراض وشرور الإنس والجن والشياطين."},
+    {ar:"وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ", en:"And from the evil of darkness when it settles", tafsir:"الغاسق: الليل إذا أقبل بظلامه. وقب: دخل وامتد. الليل وقت يكثر فيه الأشرار والسباع والهوام، فطلب العوذ من شره مشروع."},
+    {ar:"وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ", en:"And from the evil of the blowers in knots", tafsir:"النفاثات في العقد: السواحر اللواتي ينفثن في العقد التي يعقدنها في السحر. والسحر حق، والاستعاذة منه مشروعة."},
+    {ar:"وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ", en:"And from the evil of an envier when he envies.", tafsir:"الحسد: تمني زوال نعمة المحسود. وشر الحاسد يتجلى حين يتجاوز الحسد إلى الفعل والأذى. والعين حق، والحسد يضر صاحبه قبل أن يضر المحسود."},
+  ],
+  114: [
+    {ar:"قُلْ أَعُوذُ بِرَبِّ النَّاسِ", en:"Say, I seek refuge in the Lord of mankind,", tafsir:"رب الناس: خالقهم ومالكهم والمتصرف في أمورهم. الاستعاذة بربوبيته دلالة على أن المربي هو القادر على حماية المربوبين."},
+    {ar:"مَلِكِ النَّاسِ", en:"The Sovereign of mankind,", tafsir:"ملك الناس: هو الملك الحق الذي تعود إليه جميع الأمور. وفي التخصيص بذكر الناس إشارة إلى أن وسوسة الشيطان تكون في صدور الناس بشكل خاص."},
+    {ar:"إِلَٰهِ النَّاسِ", en:"The God of mankind,", tafsir:"إله الناس: المعبود بحق الذي تذل له الوجوه وتخشع له القلوب. وجمع هذه الصفات الثلاث (الرب، الملك، الإله) تأكيد على شمول قدرته وحمايته."},
+    {ar:"مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", en:"From the evil of the retreating whisperer -", tafsir:"الوسواس: الشيطان الذي يوسوس في قلوب الناس. الخناس: الذي يتأخر ويختفي عند ذكر الله، فإذا غفل العبد عاد إليه."},
+    {ar:"الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", en:"Who whispers [evil] into the breasts of mankind -", tafsir:"يوسوس في الصدور: يُلقي الشكوك والأفكار السيئة في قلوب الناس بصوت خفي كالهمس. والصدر هو موضع القلب ومحل الإرادة والعزم."},
+    {ar:"مِنَ الْجِنَّةِ وَالنَّاسِ", en:"From among the jinn and mankind.", tafsir:"الموسوس قد يكون من الجن كالشيطان، أو من الإنس كالذي يوسوس للناس بالأفكار الباطلة والشكوك. فالشياطين نوعان: شياطين الجن وشياطين الإنس."},
+  ],
+};
+
+// For surahs without data, generate placeholder
+function getAyahs(surahId, count) {
+  if (AYAHS_DATA[surahId]) return AYAHS_DATA[surahId];
+  const placeholders = [];
+  for(let i=1;i<=Math.min(count,10);i++){
+    placeholders.push({
+      ar:`الآية الكريمة رقم ${i} من هذه السورة المباركة`,
+      en:`Verse ${i} of this blessed surah`,
+      tafsir:`تفسير الآية ${i}: هذه الآية الكريمة من سورة عظيمة من كتاب الله العزيز. للاطلاع على التفسير الكامل، يرجى مراجعة كتب التفسير المعتمدة كتفسير ابن كثير والطبري والسعدي رحمهم الله.`
+    });
+  }
+  return placeholders;
+}
+
+let currentSurah = null;
+let fontSize = 24;
+let bookmarks = JSON.parse(localStorage.getItem('q_bookmarks') || '[]');
+
+// ===== RENDER SURAH LIST =====
+function renderSurahList(list) {
+  const el = document.getElementById('surahList');
+  el.innerHTML = list.map((s,i) => `
+    <div class="surah-card" onclick="openSurah(${s.id})" style="animation-delay:${i*0.03}s">
+      <div class="surah-num">${s.id}</div>
+      <div class="surah-info">
+        <div class="surah-name">${s.name}</div>
+        <div class="surah-meta">${s.type} · ${s.ayahs} آية · ص ${s.page}</div>
+      </div>
+      <div class="surah-arabic">${s.arabic}</div>
+    </div>
+  `).join('');
+}
+
+function filterSurahs() {
+  const q = document.getElementById('searchInput').value;
+  const filtered = SURAHS.filter(s => s.name.includes(q) || s.arabic.includes(q) || String(s.id).includes(q));
+  renderSurahList(filtered);
+}
+
+// ===== OPEN SURAH =====
+function openSurah(id) {
+  currentSurah = SURAHS.find(s=>s.id===id);
+  if(!currentSurah) return;
+  
+  document.getElementById('readerTitle').textContent = 'سورة ' + currentSurah.name;
+  document.getElementById('surahTypeBadge').textContent = currentSurah.type + ' · ' + currentSurah.ayahs + ' آية';
+  
+  // Hide bismillah for surah 9
+  document.getElementById('bismillah').style.display = id === 9 ? 'none' : 'block';
+  
+  const ayahs = getAyahs(id, currentSurah.ayahs);
+  const wrap = document.getElementById('ayahsWrap');
+  wrap.innerHTML = ayahs.map((a,i) => `
+    <div class="ayah-block" style="animation-delay:${i*0.05}s" id="ayah-${id}-${i+1}">
+      <div class="ayah-text" style="font-size:${fontSize}px">
+        <span class="ayah-num-badge">${i+1}</span>
+        ${a.ar}
+      </div>
+      <div class="ayah-actions">
+        <button class="ayah-btn tafsir-btn" onclick="toggleTafsir(${id},${i})">📖 التفسير</button>
+        <button class="ayah-btn share-btn" onclick="shareAyah(${id},${i})">🔗 مشاركة</button>
+        <button class="ayah-btn share-btn" onclick="toggleTrans(${id},${i})">🌐 الترجمة</button>
+      </div>
+      <div class="tafsir-panel" id="tafsir-${id}-${i}">
+        <div class="tafsir-title">📚 التفسير</div>
+        ${a.tafsir}
+      </div>
+      <div class="trans-panel" id="trans-${id}-${i}">
+        <em>${a.en}</em>
+      </div>
+    </div>
+  `).join('');
+  
+  showPage('reader');
+  document.getElementById('readerWrap').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function toggleTafsir(sid, idx) {
+  const el = document.getElementById(`tafsir-${sid}-${idx}`);
+  el.classList.toggle('open');
+}
+
+function toggleTrans(sid, idx) {
+  const el = document.getElementById(`trans-${sid}-${idx}`);
+  el.classList.toggle('open');
+}
+
+function shareAyah(sid, idx) {
+  const ayahs = getAyahs(sid, 999);
+  const a = ayahs[idx];
+  const surah = SURAHS.find(s=>s.id===sid);
+  const text = `${a.ar}\n\n[سورة ${surah.name} - الآية ${idx+1}]`;
+  if (navigator.share) {
+    navigator.share({ text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => showToast('✅ تم نسخ الآية'));
+  }
+}
+
+function goBack() {
+  showPage('list');
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(name==='list') document.getElementById('nav-list').classList.add('active');
+}
+
+function showBookmarks() {
+  showToast('قريباً: حفظ الآيات المفضلة 🔖');
+}
+
+function focusSearch() {
+  showPage('list');
+  document.getElementById('searchInput').focus();
+}
+
+function changeFontSize(delta) {
+  fontSize = Math.min(36, Math.max(16, fontSize + delta));
+  document.querySelectorAll('.ayah-text').forEach(el => el.style.fontSize = fontSize+'px');
+}
+
+function toggleFontSize() {
+  changeFontSize(fontSize >= 30 ? -8 : 4);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// Init
+renderSurahList(SURAHS);
+</script>
+</body>
+</html>
